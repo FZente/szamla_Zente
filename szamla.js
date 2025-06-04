@@ -67,14 +67,7 @@ function renderReceipts(receipts) {
           <p><strong>Nettó összeg:</strong> ${receipt.vegossz} Ft</p>
           <p><strong>ÁFA:</strong> ${receipt.afa}% → ${Math.round(receipt.vegossz * (receipt.afa / 100))} Ft</p>
           <p><strong>Végösszeg:</strong> ${brutto} Ft</p>
-          <div class="d-flex gap-2 mt-3">
-            <button class="btn btn-danger w-50" style="border: 2px solid black;" ${!torolheto ? 'disabled' : ''} onclick="deleteReceipt(${receipt.id})">
-              ${torolheto ? 'Törlés' : 'Nem törölhető (5 évig)'}
-            </button>
-            <button class="btn btn-secondary w-50 ${isStornozva ? 'disabled' : ''}" onclick="stornoReceipt(${receipt.id})">
-              Sztornó
-            </button>
-          </div>
+          <button class="btn btn-danger w-100 mt-3" onclick="deleteReceipt(${receipt.id})">Törlés</button>
         </div>
       </div>
     `;
