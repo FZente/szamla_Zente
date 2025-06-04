@@ -1,3 +1,4 @@
+const stornok = {};
 async function fetchReceipts() {
   try {
     const res = await fetch('http://localhost:3000/receipt');
@@ -32,22 +33,48 @@ function renderReceipts(receipts) {
 
   receipts.forEach(receipt => {
     const card = document.createElement('div');
+    const isStornozva = stornok[receipt.id];
     const afaOsszeg = Math.round(receipt.vegossz * (receipt.afa / 100));
     const brutto = receipt.vegossz + afaOsszeg;
-    card.className = 'col-sm-6 col-lg-4';
+    const keltezes = new Date(receipt.telj_dat);
+    const most = new Date();
+    const kulonbsegEv = (most - keltezes) / (1000 * 60 * 60 * 24 * 365.25);
+    const torolheto = kulonbsegEv >= 5;
+    card.className = 'col-sm-12 col-lg-6';
     card.innerHTML = `
-      <div class="card h-100 shadow">
+      <div class="card h-100 shadow ${isStornozva ? 'bg-danger text-white' : ''}">
         <div class="card-body">
-          <p><strong>Kiállító:</strong> ${receipt.kiallito_nev}</p>
-          <p><strong>Vevő:</strong> ${receipt.vevo_nev}</p>
-          <p><strong>Számlaszám:</strong> ${receipt.szamlaSzam || '-'}</p>
-          <p><strong>Számla kelt:</strong> ${receipt.szamlaKelt ? formatDate(receipt.szamlaKelt) : '-'}</p>
+          ${isStornozva ? '<h5 class="text-center mb-3">Számla sztornózva</h5>' : ''}
+          <div class="row">
+            <p><strong>Számlaszám:</strong> ${receipt.szamlaSzam || '-'}</p>
+            <hr>
+            <div class="col-6">
+              <p><strong>Kiállító:</strong> ${receipt.kiallito_nev}</p>
+              <p><strong>Kiállító címe:</strong> ${receipt.ki_cime || '-'}</p>
+              <p><strong>Kiállító adószáma:</strong> ${receipt.ki_adoszam || '-'}</p>
+            </div>
+            <div class="col-6 text-end">
+              <p><strong>Vevő név:</strong> ${receipt.vevo_nev}</p>
+              <p><strong>Vevő címe:</strong> ${receipt.cime || '-'}</p>
+              <p><strong>Vevő adószám:</strong> ${receipt.adoszam || '-'}</p>
+              <p><strong>Számla kelt:</strong> ${receipt.szamlaKelt ? formatDate(receipt.szamlaKelt) : '-'}</p>
+            </div>
+          </div>
+          <hr>
           ${generateFieldRow({ ...receipt, telj_dat: formatDate(receipt.telj_dat) }, 'Teljesítés dátuma', 'telj_dat')}
           ${generateFieldRow({ ...receipt, fiz_hat_ido: formatDate(receipt.fiz_hat_ido) }, 'Fizetési határidő', 'fiz_hat_ido')}
+          <hr>
           <p><strong>Nettó összeg:</strong> ${receipt.vegossz} Ft</p>
-          <p><strong>ÁFA:</strong> ${receipt.afa}% → ${afaOsszeg} Ft</p>
+          <p><strong>ÁFA:</strong> ${receipt.afa}% → ${Math.round(receipt.vegossz * (receipt.afa / 100))} Ft</p>
           <p><strong>Végösszeg:</strong> ${brutto} Ft</p>
-          <button class="btn btn-danger w-100 mt-3" onclick="deleteReceipt(${receipt.id})">Törlés</button>
+          <div class="d-flex gap-2 mt-3">
+            <button class="btn btn-danger w-50" style="border: 2px solid black;" ${!torolheto ? 'disabled' : ''} onclick="deleteReceipt(${receipt.id})">
+              ${torolheto ? 'Törlés' : 'Nem törölhető (5 évig)'}
+            </button>
+            <button class="btn btn-secondary w-50 ${isStornozva ? 'disabled' : ''}" onclick="stornoReceipt(${receipt.id})">
+              Sztornó
+            </button>
+          </div>
         </div>
       </div>
     `;
@@ -244,3 +271,8 @@ document.getElementById('receipt-form').addEventListener('submit', async (e) => 
     alert('Hiba történt a számla mentésekor.');
   }
 });
+
+function stornoReceipt(id) {
+  stornok[id] = true; 
+  fetchReceipts(); 
+}

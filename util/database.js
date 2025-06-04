@@ -30,10 +30,14 @@ db.prepare(`CREATE TABLE IF NOT EXISTS receipts (
     FOREIGN KEY (vevo_id) REFERENCES users(id)
     )`).run();
 
-export const getAllReceipt = () => db.prepare(`
+  export const getAllReceipt = () => db.prepare(`
   SELECT receipts.*,
          kiall.ki_neve AS kiallito_nev,
+         kiall.ki_cime AS ki_cime,
+         kiall.ki_adoszam AS ki_adoszam,
          users.vevo AS vevo_nev,
+         users.cime AS cime,
+         users.adoszam AS adoszam,
          users.szamlaSzam,
          users.szamlaKelt
   FROM receipts
@@ -41,7 +45,7 @@ export const getAllReceipt = () => db.prepare(`
   LEFT JOIN users ON receipts.vevo_id = users.id
 `).all();
 export const getReceiptById = (id) => db.prepare(`SELECT * FROM receipts WHERE id = ?`).get(id)
-export const creatReceipt = (kiallito_id, vevo_id, vegossz, afa) => {
+export const createReceipt = (kiallito_id, vevo_id, vegossz, afa) => {
   const now = new Date();
   const twoWeeksLater = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000).toISOString();
 
@@ -53,8 +57,10 @@ export const creatReceipt = (kiallito_id, vevo_id, vegossz, afa) => {
 export const deleteReceipt = (id) => db.prepare(`DELETE FROM receipts WHERE id = ?`).run(id)
 
 export const getAllUsers = () => db.prepare(`SELECT * FROM users`).all()
+export const createUser = (vevo, cime, adoszam, szamlaSzam, szamlaKelt) => db.prepare(`INSERT INTO users (vevo, cime, adoszam, szamlaSzam, szamlaKelt) VALUES (?, ?, ?, ?, ?)`).run(vevo, cime, adoszam, szamlaSzam, szamlaKelt)
 
 export const getAllKi = () => db.prepare(`SELECT * FROM kiall`).all()
+export const createKi = (ki_neve, ki_cime, ki_adoszam) => db.prepare(`INSERT INTO kiall (ki_neve, ki_cime, ki_adoszam) VALUES (?, ?, ?)`).run(ki_neve, ki_cime, ki_adoszam)
 
 const users = [
     {vevo: 'Sanyi', cime: 'Valahol Sima utca 1.', adoszam: '1234567-1234567', szamlaSzam: '1234-5678-0000', szamlaKelt: '2020-03-02'},

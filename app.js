@@ -32,6 +32,7 @@ app.get("/receipt/:id", (req, res) => {
 
 app.post("/receipt", (req, res) => {
     try {
+        const { kiallito_id, vevo_id, vegossz, afa } = req.body;
 		console.log("POST /receipt body:", req.body);
         if (
 		typeof kiallito_id !== 'number' || isNaN(kiallito_id) ||
