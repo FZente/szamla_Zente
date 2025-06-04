@@ -57,7 +57,14 @@ export const createReceipt = (kiallito_id, vevo_id, vegossz, afa) => {
 export const deleteReceipt = (id) => db.prepare(`DELETE FROM receipts WHERE id = ?`).run(id)
 
 export const getAllUsers = () => db.prepare(`SELECT * FROM users`).all()
-export const createUser = (vevo, cime, adoszam, szamlaSzam, szamlaKelt) => db.prepare(`INSERT INTO users (vevo, cime, adoszam, szamlaSzam, szamlaKelt) VALUES (?, ?, ?, ?, ?)`).run(vevo, cime, adoszam, szamlaSzam, szamlaKelt)
+export const createUser = (vevo, cime, adoszam) => {
+  const now = new Date();
+  return db.prepare(`
+    INSERT INTO users (vevo, cime, adoszam, szamlaKelt) 
+    VALUES (?, ?, ?, ?)
+    `).run(vevo, cime, adoszam, now.toISOString())
+}
+export const updateUsers = (id, vevo, cime, adoszam) => db.prepare(`UPDATE users SET vevo = ?, cime = ?, adoszam = ? WHERE id = ?`).run(vevo, cime, adoszam, id)
 
 export const getAllKi = () => db.prepare(`SELECT * FROM kiall`).all()
 export const createKi = (ki_neve, ki_cime, ki_adoszam) => db.prepare(`INSERT INTO kiall (ki_neve, ki_cime, ki_adoszam) VALUES (?, ?, ?)`).run(ki_neve, ki_cime, ki_adoszam)
@@ -94,14 +101,12 @@ if (existingUsers === 0) {
   );
 }
 
-// 2. Kibocsátók betöltése
 const insertKiall = db.prepare(`INSERT INTO kiall (ki_neve, ki_cime, ki_adoszam) VALUES (?, ?, ?)`);
 const existingKiall = db.prepare('SELECT COUNT(*) AS count FROM kiall').get().count;
 if (existingKiall === 0) {
   kiall.forEach(ki => insertKiall.run(ki.ki_neve, ki.ki_cime, ki.ki_adoszam));
 }
 
-// 3. Számlák betöltése CSAK akkor, ha a fenti kettő már megtörtént
 const insertReceipt = db.prepare(`
   INSERT INTO receipts (kiallito_id, vevo_id, vegossz, afa, telj_dat, fiz_hat_ido)
   VALUES (?, ?, ?, ?, ?, ?)

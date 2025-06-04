@@ -191,22 +191,6 @@ function hideKiall() {
   document.getElementById('kiall-container').innerHTML = '';
 }
 
-async function editField(id, field, currentValue) {
-  const newValue = prompt(`Új érték (${field}):`, currentValue);
-  if (newValue === null || newValue.trim() === '' || newValue === currentValue) return;
-
-  const res = await fetch('http://localhost:3000/receipt');
-  const receipt = (await res.json()).find(r => r.id === id);
-  receipt[field] = newValue;
-
-  await fetch(`http://localhost:3000/receipt/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(receipt)
-  });
-
-  fetchReceipts();
-}
 
 async function clearField(id, field) {
   if (!confirm(`Biztosan törlöd a(z) "${field}" mezőt?`)) return;
@@ -265,7 +249,81 @@ document.getElementById('receipt-form').addEventListener('submit', async (e) => 
 
     e.target.reset();
     document.getElementById('receipt-form-container')?.classList.add('d-none');
-    fetchReceipts(); // újratölti a számlalistát
+    fetchReceipts(); 
+  } catch (err) {
+    console.error(err);
+    alert('Hiba történt a számla mentésekor.');
+  }
+});
+
+function toggleUserForm() {
+  const formContainer = document.getElementById('users-form-container');
+  formContainer.classList.toggle('d-none');
+}
+
+document.getElementById('users-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const vevo = document.getElementById('vevo').value.trim();
+  const cime = document.getElementById('cime').value.trim();
+  const adoszam = document.getElementById('adoszam').value.trim();
+
+  if (!vevo || !cime || !adoszam ) {
+    alert("Minden mezőt ki kell tölteni!");
+    return;
+  }
+
+  try {
+    await fetch('http://localhost:3000/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        vevo: Number(vevo),
+        cime: Number(cime),
+        adoszam: Number(adoszam),
+      })
+    });
+
+    e.target.reset();
+    document.getElementById('users-form-container')?.classList.add('d-none');
+    fetchReceipts(); 
+  } catch (err) {
+    console.error(err);
+    alert('Hiba történt a számla mentésekor.');
+  }
+});
+
+function updateUsers() {
+  const formContainer = document.getElementById('upUsers-form-container');
+  formContainer.classList.toggle('d-none');
+}
+
+document.getElementById('upUsers-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const vevo = document.getElementById('vevo').value.trim();
+  const cime = document.getElementById('cime').value.trim();
+  const adoszam = document.getElementById('adoszam').value.trim();
+
+  if (!vevo || !cime || !adoszam ) {
+    alert("Minden mezőt ki kell tölteni!");
+    return;
+  }
+
+  try {
+    await fetch('http://localhost:3000/users/${id}', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        vevo: Number(vevo),
+        cime: Number(cime),
+        adoszam: Number(adoszam),
+      })
+    });
+
+    e.target.reset();
+    document.getElementById('users-form-container')?.classList.add('d-none');
+    fetchReceipts(); 
   } catch (err) {
     console.error(err);
     alert('Hiba történt a számla mentésekor.');

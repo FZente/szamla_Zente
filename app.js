@@ -55,8 +55,6 @@ app.post("/receipt", (req, res) => {
     } catch (error) {
         res.status(500).json({ message: `${error}` });
     }
-	const info = db.creatReceipt(kiallito_id, vevo_id, vegossz, afa);
-	console.log("INSERT eredmény:", info);
 });
 
 app.put("/receipt/:id", (req, res) => {
@@ -93,6 +91,23 @@ app.get("/users", (req, res) => {
 		res.status(500).json({ message: `${error}` });
 	}
 });
+
+app.post("/users", (req, res) => {
+	try {
+		const { vevo, cime, adoszam, szamlaSzam, szamlaKelt } = req.body;
+		if (!vevo || !cime || !adoszam || !szamlaSzam || !szamlaKelt) {
+			return res.status(400).json({ message: "Invalid credentials" });
+		}
+		const savedUser = db.createUser(vevo, cime, adoszam, szamlaSzam, szamlaKelt);
+		if (savedUser.changes != 1) {
+			return res.status(422).json({ message: "Unprocessable Entity" });
+		}
+		res.status(201).json({ id: savedUser.lastInsertRowid, vevo, cime, adoszam, szamlaSzam, szamlaKelt });
+	} catch (error) {
+		res.status(500).json({ message: `${error}` });
+	}
+});
+
 
 app.get("/kiall", (req, res) => {
   try {

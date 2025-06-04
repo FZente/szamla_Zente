@@ -16,10 +16,15 @@
       <h1 class="text-center mb-4">Számlák</h1>
 
     <div class="text-center mb-3">
-      <button class="btn btn-primary" onclick="toggleForm()">Új számla hozzáadása</button>
       <button class="btn btn-primary" onclick="fetchReceipts()">Összes számla megjelenítése</button>
       <button class="btn btn-primary" onclick="showUsers()">Vevők megjelenítése</button>
       <button class="btn btn-primary" onclick="showKiall()">Kiállítók megjelenítése</button>
+    </div>
+
+    <div class="text-center mb-3">
+      <button class="btn btn-info" onclick="toggleForm()">Új számla hozzáadása</button>
+      <button class="btn btn-info" onclick="toggleUserForm()">Új vevő hozzáadása</button>
+      <button class="btn btn-info" onclick="updateUsers()">Vevők szerkesztése</button>
     </div>
 
     <div id="users-container" class="container mt-4"></div>
@@ -52,10 +57,56 @@
       </div>
     </div>
 
+    <div id="users-form-container" class="card mb-4 d-none">
+      <div class="card-body">
+        <h5 class="card-title">Új Vevő</h5>
+        <form id="users-form" class="row g-3">
+          <div class="col-md-6">
+            <label for="vevo" class="form-label">Vevő:</label>
+            <input type="text" class="form-control" id="vevo" required>
+          </div>
+          <div class="col-md-6">
+            <label for="cime" class="form-label">Vevő címe:</label>
+            <input type="text" class="form-control" id="cime" required>
+          </div>
+          <div class="col-md-6">
+            <label for="adoszam" class="form-label">Vevő adószáma:</label>
+            <input type="number" class="form-control" id="adoszam" required>
+          </div>
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary">Mentés</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="upUsers-form-container" class="card mb-4 d-none">
+      <div class="card-body">
+        <h5 class="card-title">Vevő szerkesztése</h5>
+        <form id="upUsers-form" class="row g-3">
+          <div class="col-md-6">
+            <label for="vevo" class="form-label">Vevő:</label>
+            <input type="text" class="form-control" id="vevo" required>
+          </div>
+          <div class="col-md-6">
+            <label for="cime" class="form-label">Vevő címe:</label>
+            <input type="text" class="form-control" id="cime" required>
+          </div>
+          <div class="col-md-6">
+            <label for="adoszam" class="form-label">Vevő adószáma:</label>
+            <input type="number" class="form-control" id="adoszam" required>
+          </div>
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary">Mentés</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <div class="mb-4 d-flex flex-wrap gap-2 justify-content-center">
       <div class="d-flex align-items-center gap-2">
         <input type="number" id="receipt-id-input" class="form-control" placeholder="Számla ID" style="max-width: 120px;">
-        <button class="btn btn-info" onclick="fetchReceiptById()">Keresés</button>
+        <button class="btn btn-outline-secondary" onclick="fetchReceiptById()">🔍</button>
       </div>
     </div>
 
