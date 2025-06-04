@@ -47,7 +47,7 @@ function renderReceipts(receipts) {
           <p><strong>Nettó összeg:</strong> ${receipt.vegossz} Ft</p>
           <p><strong>ÁFA:</strong> ${receipt.afa}% → ${afaOsszeg} Ft</p>
           <p><strong>Végösszeg:</strong> ${brutto} Ft</p>
-          <button class="btn btn-danger w-100 mt-3" onclick="deleteReceipt(${receipt.id})">Törlés</button>
+          <button class="btn btn-danger w-10 mt-3" onclick="deleteReceipt(${receipt.id})">Törlés</button>
         </div>
       </div>
     `;
